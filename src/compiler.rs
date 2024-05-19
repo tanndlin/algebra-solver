@@ -14,9 +14,9 @@ impl AstNode {
 
 fn simplify_operator(ast: AstNode) -> AstNode {
     match ast.node_type.clone() {
-        Token::Operator(op @ Operator::Add) | Token::Operator(op @ Operator::Subtract) => {
-            simplify_add_sub(ast, op)
-        }
+        Token::Operator(op @ Operator::Add)
+        | Token::Operator(op @ Operator::Subtract)
+        | Token::Operator(op @ Operator::Multiply) => simplify_add_sub_mult(ast, op),
         _ => {
             let children = ast
                 .children
@@ -31,7 +31,7 @@ fn simplify_operator(ast: AstNode) -> AstNode {
     }
 }
 
-fn simplify_add_sub(ast: AstNode, op: Operator) -> AstNode {
+fn simplify_add_sub_mult(ast: AstNode, op: Operator) -> AstNode {
     let left = ast.children[0].clone();
     let right = ast.children[1].clone();
 
@@ -42,6 +42,7 @@ fn simplify_add_sub(ast: AstNode, op: Operator) -> AstNode {
         let result = match op {
             Operator::Add => left_val + right_val,
             Operator::Subtract => left_val - right_val,
+            Operator::Multiply => left_val * right_val,
             _ => panic!("Expected add or subtract operator"),
         };
 
