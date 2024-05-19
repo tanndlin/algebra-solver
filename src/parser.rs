@@ -52,9 +52,7 @@ fn parse_mul_div(parser: &mut Parser) -> AstNode {
     }
 
     match parser.get_current_token().token.clone() {
-        Token::Operator(op @ Operator::Multiply)
-        | Token::Operator(op @ Operator::Divide)
-        | Token::Operator(op @ Operator::Mod) => {
+        Token::Operator(op @ Operator::Multiply) | Token::Operator(op @ Operator::Divide) => {
             parser.position += 1;
             AstNode {
                 node_type: Token::Operator(op),

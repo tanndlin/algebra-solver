@@ -111,7 +111,6 @@ fn match_operator(lexer: &mut Lexer) -> Option<Token> {
         '-' => Some(Token::Operator(Operator::Subtract)),
         '*' => Some(Token::Operator(Operator::Multiply)),
         '/' => Some(Token::Operator(Operator::Divide)),
-        '%' => Some(Token::Operator(Operator::Mod)),
         '<' => Some(Token::LessThan),
         '>' => Some(Token::GreaterThan),
         '(' => Some(Token::LParen),
@@ -187,17 +186,16 @@ mod tests {
 
     #[test]
     fn lex_all_operators() {
-        let tokens = tokenize("+-*/%<><=>===");
-        assert_eq!(tokens.len(), 10);
+        let tokens = tokenize("+-*/<><=>===");
+        assert_eq!(tokens.len(), 9);
         assert_eq!(tokens[0].token, Token::Operator(Operator::Add));
         assert_eq!(tokens[1].token, Token::Operator(Operator::Subtract));
         assert_eq!(tokens[2].token, Token::Operator(Operator::Multiply));
         assert_eq!(tokens[3].token, Token::Operator(Operator::Divide));
-        assert_eq!(tokens[4].token, Token::Operator(Operator::Mod));
-        assert_eq!(tokens[5].token, Token::LessThan);
-        assert_eq!(tokens[6].token, Token::GreaterThan);
-        assert_eq!(tokens[7].token, Token::Leq);
-        assert_eq!(tokens[8].token, Token::Geq);
-        assert_eq!(tokens[9].token, Token::Eq);
+        assert_eq!(tokens[4].token, Token::LessThan);
+        assert_eq!(tokens[5].token, Token::GreaterThan);
+        assert_eq!(tokens[6].token, Token::Leq);
+        assert_eq!(tokens[7].token, Token::Geq);
+        assert_eq!(tokens[8].token, Token::Eq);
     }
 }

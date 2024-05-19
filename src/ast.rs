@@ -17,7 +17,6 @@ impl AstNode {
                     Operator::Subtract => "-",
                     Operator::Multiply => "*",
                     Operator::Divide => "/",
-                    Operator::Mod => "%",
                 };
 
                 let left = self.children[0].to_string();
@@ -57,7 +56,6 @@ fn evaluate_node(node: &AstNode) -> i32 {
         Token::Operator(Operator::Subtract) => eval_operator!(-),
         Token::Operator(Operator::Multiply) => eval_operator!(*),
         Token::Operator(Operator::Divide) => eval_operator!(/),
-        Token::Operator(Operator::Mod) => eval_operator!(%),
         Token::LParen => evaluate_node(&node.children[0]),
         _ => panic!("Not implemented for {:?}", node.node_type),
     }

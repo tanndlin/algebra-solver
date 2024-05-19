@@ -18,7 +18,6 @@ pub enum Operator {
     Subtract,
     Multiply,
     Divide,
-    Mod,
 }
 
 pub fn variant_eq<T>(a: &T, b: &T) -> bool {
