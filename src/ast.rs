@@ -8,7 +8,17 @@ pub struct AstNode {
 
 impl AstNode {
     pub fn evaluate(&self) -> i32 {
+        assert!(self.is_evaluatable());
         evaluate_node(self)
+    }
+
+    pub fn is_evaluatable(&self) -> bool {
+        match self.node_type {
+            Token::Number(_) => true,
+            Token::Operator(_) => self.children.iter().all(|child| child.is_evaluatable()),
+            Token::LParen => self.children[0].is_evaluatable(),
+            _ => false,
+        }
     }
 }
 
