@@ -26,7 +26,7 @@ impl Lexer {
     fn create_token(&mut self, token: Token) {
         self.tokens.push(LexerToken {
             position: self.position,
-            token: token,
+            token,
             line: self.line_number,
         });
     }
@@ -62,7 +62,7 @@ pub fn tokenize(script: &str) -> Vec<LexerToken> {
 
 fn next_token(lexer: &mut Lexer) -> Token {
     let c = lexer.cur_char();
-    if c.is_digit(10) {
+    if c.is_ascii_digit() {
         return lex_number(lexer);
     }
 
@@ -74,34 +74,7 @@ fn next_token(lexer: &mut Lexer) -> Token {
         panic!("Unexpected character: {}", c);
     }
 
-    let possibly_ident = lex_identifier(lexer);
-    if let Some(keyword) = Keywords::from_string(&possibly_ident) {
-        // if the keyword is a data type
-        if let Keywords::Integer | Keywords::Float | Keywords::Boolean = keyword {
-            return lex_data_type(lexer, keyword);
-        }
-
-        return keyword.to_token();
-    }
-
-    Token::Identifier(possibly_ident.to_string())
-}
-
-// Grabs all * after a data type for pointers
-fn lex_data_type(lexer: &mut Lexer, keyword: Keywords) -> Token {
-    let mut data_type = match keyword {
-        Keywords::Integer => DataType::Integer,
-        Keywords::Float => DataType::Float,
-        Keywords::Boolean => DataType::Boolean,
-        _ => panic!("Unexpected keyword"),
-    };
-
-    while !lexer.is_end() && lexer.cur_char() == '*' {
-        lexer.position += 1;
-        data_type = DataType::Pointer(Box::new(data_type));
-    }
-
-    Token::Type(data_type)
+    Token::Identifier(lex_identifier(lexer).to_string())
 }
 
 fn lex_identifier(lexer: &mut Lexer) -> String {
@@ -141,19 +114,8 @@ fn match_operator(lexer: &mut Lexer) -> Option<Token> {
         '%' => Some(Token::Operator(Operator::Mod)),
         '<' => Some(Token::LessThan),
         '>' => Some(Token::GreaterThan),
-        '!' => Some(Token::Not),
-        ';' => Some(Token::Semi),
-        '=' => Some(Token::Assign),
         '(' => Some(Token::LParen),
         ')' => Some(Token::RParen),
-        '{' => Some(Token::LCurly),
-        '}' => Some(Token::RCurly),
-        ',' => Some(Token::Comma),
-        '&' => Some(Token::BitwiseOp(BitwiseOp::And)),
-        '|' => Some(Token::BitwiseOp(BitwiseOp::Or)),
-        '~' => Some(Token::BitwiseOp(BitwiseOp::Not)),
-        '^' => Some(Token::BitwiseOp(BitwiseOp::Xor)),
-        ':' => Some(Token::Colon),
         _ => None,
     };
 
@@ -173,18 +135,8 @@ fn match_double_char_op(lexer: &mut Lexer) -> Option<Token> {
     let next_c = lexer.script.chars().nth(lexer.position + 1).unwrap();
     let matched = match (c, next_c) {
         ('=', '=') => Some(Token::Eq),
-        ('!', '=') => Some(Token::NotEq),
         ('<', '=') => Some(Token::Leq),
         ('>', '=') => Some(Token::Geq),
-        ('&', '&') => Some(Token::And),
-        ('|', '|') => Some(Token::Or),
-        ('+', '=') => Some(Token::ShortAssign(Operator::Add)),
-        ('-', '=') => Some(Token::ShortAssign(Operator::Subtract)),
-        ('*', '=') => Some(Token::ShortAssign(Operator::Multiply)),
-        ('/', '=') => Some(Token::ShortAssign(Operator::Divide)),
-        ('%', '=') => Some(Token::ShortAssign(Operator::Mod)),
-        ('+', '+') => Some(Token::Increment),
-        ('-', '-') => Some(Token::Decrement),
         _ => None,
     };
 
@@ -200,7 +152,7 @@ fn lex_number(lexer: &mut Lexer) -> Token {
 
     while !lexer.is_end() {
         let next_c = lexer.cur_char();
-        if next_c.is_digit(10) {
+        if next_c.is_ascii_digit() {
             number.push(next_c);
             lexer.position += 1;
         } else {
@@ -218,10 +170,10 @@ mod tests {
 
     #[test]
     fn test_is_whitespace() {
-        assert_eq!(is_whitespace(' '), true);
-        assert_eq!(is_whitespace('\n'), true);
-        assert_eq!(is_whitespace('\t'), true);
-        assert_eq!(is_whitespace('a'), false);
+        assert!(is_whitespace(' '));
+        assert!(is_whitespace('\n'));
+        assert!(is_whitespace('\t'));
+        assert!(!is_whitespace('a'));
     }
 
     #[test]
@@ -235,8 +187,8 @@ mod tests {
 
     #[test]
     fn lex_all_operators() {
-        let tokens = tokenize("+-*/%<><=>===!=&&||");
-        assert_eq!(tokens.len(), 13);
+        let tokens = tokenize("+-*/%<><=>===");
+        assert_eq!(tokens.len(), 10);
         assert_eq!(tokens[0].token, Token::Operator(Operator::Add));
         assert_eq!(tokens[1].token, Token::Operator(Operator::Subtract));
         assert_eq!(tokens[2].token, Token::Operator(Operator::Multiply));
@@ -247,8 +199,5 @@ mod tests {
         assert_eq!(tokens[7].token, Token::Leq);
         assert_eq!(tokens[8].token, Token::Geq);
         assert_eq!(tokens[9].token, Token::Eq);
-        assert_eq!(tokens[10].token, Token::NotEq);
-        assert_eq!(tokens[11].token, Token::And);
-        assert_eq!(tokens[12].token, Token::Or);
     }
 }

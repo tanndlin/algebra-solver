@@ -21,7 +21,7 @@
                 {
                     "name": "Git",
                     "commands": [
-                        "cd .."
+                        "git st"
                     ],
                 }
             ]
