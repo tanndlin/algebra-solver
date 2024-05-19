@@ -1,12 +1,34 @@
 use crate::types::{Operator, Token};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct AstNode {
     pub node_type: Token,
     pub children: Vec<AstNode>,
 }
 
 impl AstNode {
+    #[allow(dead_code)]
+    pub fn to_string(&self) -> String {
+        match &self.node_type {
+            Token::Number(n) => n.to_string(),
+            Token::Operator(op) => {
+                let op = match op {
+                    Operator::Add => "+",
+                    Operator::Subtract => "-",
+                    Operator::Multiply => "*",
+                    Operator::Divide => "/",
+                    Operator::Mod => "%",
+                };
+
+                let left = self.children[0].to_string();
+                let right = self.children[1].to_string();
+                format!("{} {} {}", left, op, right)
+            }
+            Token::LParen => format!("({})", self.children[0].to_string()),
+            _ => panic!("Not implemented for {:?}", self.node_type),
+        }
+    }
+
     pub fn evaluate(&self) -> i32 {
         assert!(self.is_evaluatable());
         evaluate_node(self)
