@@ -74,7 +74,7 @@ fn next_token(lexer: &mut Lexer) -> Token {
         panic!("Unexpected character: {}", c);
     }
 
-    Token::Identifier(lex_identifier(lexer).to_string())
+    Token::Term((1, lex_identifier(lexer).to_string()))
 }
 
 fn lex_identifier(lexer: &mut Lexer) -> String {

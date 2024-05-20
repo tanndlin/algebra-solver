@@ -133,7 +133,7 @@ fn parse_number(parser: &mut Parser) -> AstNode {
 }
 
 fn parse_identifier(parser: &mut Parser) -> AstNode {
-    let tok = consume_token(parser, Token::Identifier(String::new()));
+    let tok = consume_token(parser, Token::Term((1, String::new())));
 
     AstNode {
         node_type: tok.token,
@@ -146,7 +146,7 @@ fn parse_factor(parser: &mut Parser) -> AstNode {
 
     match token.token {
         Token::Number(_) => parse_number(parser),
-        Token::Identifier(_) => parse_identifier(parser),
+        Token::Term(_) => parse_identifier(parser),
         Token::LParen => parse_parentheses(parser),
         _ => panic!("Expected number or identifier"),
     }

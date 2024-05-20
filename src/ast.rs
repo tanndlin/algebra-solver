@@ -7,6 +7,31 @@ pub struct AstNode {
 }
 
 impl AstNode {
+    pub fn new_number(n: i32) -> Self {
+        AstNode {
+            node_type: Token::Number(n),
+            children: vec![],
+        }
+    }
+
+    pub fn is_term(&self) -> bool {
+        matches!(self.node_type, Token::Term(_))
+    }
+
+    pub fn get_term_name(&self) -> String {
+        match &self.node_type {
+            Token::Term((_, s)) => s.clone(),
+            _ => panic!("Expected term, got {:?}", self.node_type),
+        }
+    }
+
+    pub fn get_term_coef(&self) -> i32 {
+        match &self.node_type {
+            Token::Term((coef, _)) => *coef,
+            _ => panic!("Expected term, got {:?}", self.node_type),
+        }
+    }
+
     #[allow(dead_code)]
     pub fn to_string(&self) -> String {
         match &self.node_type {
@@ -24,6 +49,14 @@ impl AstNode {
                 format!("{} {} {}", left, op, right)
             }
             Token::LParen => format!("({})", self.children[0].to_string()),
+            Token::Term((coef, s)) => {
+                let coef_str = if *coef == 1 {
+                    "".to_string()
+                } else {
+                    coef.to_string()
+                };
+                format!("{}{}", coef_str, s)
+            }
             _ => panic!("Not implemented for {:?}", self.node_type),
         }
     }
