@@ -147,19 +147,26 @@ fn match_double_char_op(lexer: &mut Lexer) -> Option<Token> {
 }
 
 fn lex_number(lexer: &mut Lexer) -> Token {
-    let mut number = String::new();
+    let mut coef = String::new();
 
     while !lexer.is_end() {
         let next_c = lexer.cur_char();
         if next_c.is_ascii_digit() {
-            number.push(next_c);
+            coef.push(next_c);
             lexer.position += 1;
         } else {
             break;
         }
     }
 
-    Token::Number(number.parse::<i32>().unwrap())
+    let coef = coef.parse::<i32>().unwrap();
+
+    if !lexer.is_end() && lexer.cur_char().is_alphabetic() {
+        let term_name = lex_identifier(lexer);
+        return Token::Term((coef, term_name));
+    }
+
+    Token::Number(coef)
 }
 
 // Tests
@@ -197,5 +204,14 @@ mod tests {
         assert_eq!(tokens[6].token, Token::Leq);
         assert_eq!(tokens[7].token, Token::Geq);
         assert_eq!(tokens[8].token, Token::Eq);
+    }
+
+    #[test]
+    fn parse_terms() {
+        let tokens = tokenize("2x + 3y");
+        assert_eq!(tokens.len(), 3);
+        assert_eq!(tokens[0].token, Token::Term((2, "x".to_string())));
+        assert_eq!(tokens[1].token, Token::Operator(Operator::Add));
+        assert_eq!(tokens[2].token, Token::Term((3, "y".to_string())));
     }
 }

@@ -1,7 +1,7 @@
 mod ast;
 mod lexer;
 mod parser;
-mod simplifier;
+// mod simplifier;
 mod test;
 mod types;
 
@@ -13,5 +13,5 @@ fn main() {
     }
 
     let ast = parser::parse(tokens);
-    simplifier::simplify(&ast);
+    // simplifier::simplify(&ast);
 }
