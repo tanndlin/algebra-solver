@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::ast::*;
 use crate::types::*;
 
@@ -49,10 +51,7 @@ fn simplify_add_sub_mult(ast: AstNode, op: Operator) -> AstNode {
             _ => panic!("Expected add or subtract operator"),
         };
 
-        return AstNode {
-            node_type: Token::Number(result),
-            children: vec![],
-        };
+        return AstNode::new_number(result);
     }
 
     // If they are the same variable, combine them

@@ -1,6 +1,6 @@
 use crate::types::{Operator, Token};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct AstNode {
     pub node_type: Token,
     pub children: Vec<AstNode>,
